@@ -1,0 +1,61 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Net.Http; 
+using Newtonsoft.Json;
+
+namespace geolocate
+{
+    public class Data
+    {
+        public string country { get; set; }
+        public string region { get; set; }
+        public string city { get; set; }
+        public string loc { get; set; }
+        public string org { get; set; }
+        public string timezone { get; set; }
+        public string postal { get; set; } 
+    }
+
+    internal class Program
+    {
+        static async Task Main(string[] args)
+        {
+            Console.Title = "Geolocator";
+            Console.Write("Entrez une addresse IP: ");
+            string ip = Console.ReadLine();
+            string url = $"https://ipinfo.io/{ip}/json";
+
+            using (HttpClient client = new HttpClient())
+            {
+                try
+                {
+                    HttpResponseMessage response = await client.GetAsync(url);
+                    response.EnsureSuccessStatusCode();
+
+                    Console.WriteLine("Request Successfully Made");
+
+                    string responseData = await response.Content.ReadAsStringAsync();
+                    Data ipInfo = JsonConvert.DeserializeObject<Data>(responseData);
+
+                    Console.Clear();
+                    Console.WriteLine($"Addresse IP: {ip}");
+                    Console.WriteLine($"Pays: {ipInfo.country}");
+                    Console.WriteLine($"Region: {ipInfo.region}");
+                    Console.WriteLine($"Ville: {ipInfo.city}");
+                    Console.WriteLine($"Code Postal: {ipInfo.postal}");
+                    Console.WriteLine($"Location: {ipInfo.loc}");
+                    Console.WriteLine($"ASN: {ipInfo.org}");
+                    string [] Coords = ipInfo.loc.Split(',');
+                    Console.WriteLine($"Google Maps: https://google.com/maps/?q={Coords[0]},{Coords[1]}");
+                }
+                catch (HttpRequestException ex)
+                {
+                    Console.WriteLine($"Error: {ex.Message}");
+                }
+            }
+        }
+    }
+}
