@@ -1,3 +1,3 @@
-**Educational purposes only**
+# Educational purposes only
 
 Credit : https://www.youtube.com/@ebolaman_
